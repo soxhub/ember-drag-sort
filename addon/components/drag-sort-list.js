@@ -25,6 +25,7 @@ export default Component.extend({
   childClass      : '',
   childTagName    : 'div',
   handle          : null,
+  horizontalSort  : null,
 
   dragEndAction                  : undefined,
   determineForeignPositionAction : undefined,

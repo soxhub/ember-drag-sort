@@ -17,6 +17,10 @@
   z-index: 2;
 }
 
+.dragSortList.horizontal {
+  display: inline-flex;
+}
+
 .dragSortItem {
   position: relative;
 }
@@ -44,12 +48,30 @@
   padding-bottom: 25px;
 }
 
+.dragSortItem.-placeholderLeft {
+  /*margin-top: 25px;*/
+  padding-left: 25px;
+}
+
+.dragSortItem.-placeholderRight {
+  /*margin-bottom: 25px;*/
+  padding-right: 25px;
+}
+
 .dragSortItem.-placeholderAbove:before,
 .dragSortItem.-placeholderBelow:before {
   content: '🡢';
   position: absolute;
   line-height: 25px;
   left: 0;
+}
+
+.dragSortItem.-placeholderLeft:before,
+.dragSortItem.-placeholderRight:before {
+  content: '🡢';
+  position: absolute;
+  line-height: 30px;
+  top: 0;
 }
 
 .dragSortItem.-placeholderAbove:before {
@@ -60,4 +82,14 @@
 .dragSortItem.-placeholderBelow:before {
   /*top: 100%;*/
   bottom: 0;
+}
+
+.dragSortItem.-placeholderLeft:before {
+  /*bottom: 100%;*/
+  left: 9px;
+}
+
+.dragSortItem.-placeholderRight:before {
+  /*top: 100%;*/
+  right:9px;
 }

@@ -31,6 +31,7 @@ export default Component.extend({
   childTagName    : 'div',
   draggingEnabled : undefined,
   handle          : null,
+  horizontalSort  : null,
 
   dragEndAction                  : undefined,
   determineForeignPositionAction : undefined,
@@ -50,6 +51,8 @@ export default Component.extend({
     'isDraggingOver:-isDraggingOver',
     'shouldShowPlaceholderAbove2:-placeholderAbove',
     'shouldShowPlaceholderBelow2:-placeholderBelow',
+    'shouldShowPlaceholderLeft2:-placeholderLeft',
+    'shouldShowPlaceholderRight2:-placeholderRight'
   ],
 
   attributeBindings : [
@@ -65,16 +68,18 @@ export default Component.extend({
 
   shouldShowPlaceholderAbove2 : undefined,
   shouldShowPlaceholderBelow2 : undefined,
+  shouldShowPlaceholderLeft2  : undefined,
+  shouldShowPlaceholderRight2 : undefined,
 
 
 
   // ----- Aliases -----
-  isDraggingUp : reads('dragSort.isDraggingUp'),
-  sourceList   : reads('dragSort.sourceList'),
-  sourceIndex  : reads('dragSort.sourceIndex'),
-  targetIndex  : reads('dragSort.targetIndex'),
-  targetList   : reads('dragSort.targetList'),
-
+  isDraggingUp   : reads('dragSort.isDraggingUp'),
+  isDraggingLeft : reads('dragSort.isDraggingLeft'),
+  sourceList     : reads('dragSort.sourceList'),
+  sourceIndex    : reads('dragSort.sourceIndex'),
+  targetIndex    : reads('dragSort.targetIndex'),
+  targetList     : reads('dragSort.targetList'),
 
 
   // ----- Computed properties -----
@@ -100,9 +105,10 @@ export default Component.extend({
   }),
 
   isLast                     : eq('index', subtract('items.length', 1)),
-  shouldShowPlaceholderAbove : and('isDraggingOver', 'isDraggingUp'),
-  shouldShowPlaceholderBelow : and('isDraggingOver', not('isDraggingUp')),
-
+  shouldShowPlaceholderAbove : and('isDraggingOver', 'isDraggingUp', not('horizontalSort')),
+  shouldShowPlaceholderBelow : and('isDraggingOver', not('isDraggingUp'), not('horizontalSort')),
+  shouldShowPlaceholderLeft  : and('isDraggingOver', 'horizontalSort', 'isDraggingLeft'),
+  shouldShowPlaceholderRight : and('isDraggingOver', 'horizontalSort', not('isDraggingLeft')),
 
 
   // ----- Overridden methods -----
@@ -150,8 +156,9 @@ export default Component.extend({
     event.stopPropagation()
 
     const pageY = event.originalEvent ? event.originalEvent.pageY : event.pageY
+    const pageX = event.originalEvent ? event.originalEvent.pageX : event.pageX
 
-    this.draggingOver({pageY})
+    this.draggingOver({pageY, pageX})
   },
 
   dragEnter (event) {
@@ -186,15 +193,18 @@ export default Component.extend({
     dragSort.endDragging({action})
   },
 
-  draggingOver ({pageY}) {
+  draggingOver ({pageY, pageX}) {
     const group        = this.get('group')
     const index        = this.get('index')
     const items        = this.get('items')
     const top          = this.$().offset().top
     const height       = this.$().outerHeight()
+    const width        = this.$().outerWidth()
+    const left         = this.$().offset().left / width
     const isDraggingUp = (pageY - top) < height / 2
+    const isDraggingLeft = (pageX - left) < width / 2
 
-    this.get('dragSort').draggingOver({group, index, items, isDraggingUp})
+    this.get('dragSort').draggingOver({group, index, items, isDraggingUp, isDraggingLeft})
   },
 
   collapse () {
@@ -236,7 +246,9 @@ export default Component.extend({
   consumePlaceholderCPs : on('didInsertElement', function () {
     this.getProperties(
       'shouldShowPlaceholderAbove',
-      'shouldShowPlaceholderBelow'
+      'shouldShowPlaceholderBelow',
+      'shouldShowPlaceholderLeft',
+      'shouldShowPlaceholderRight'
     )
   }),
 
@@ -263,4 +275,29 @@ export default Component.extend({
       )
     })
   }),
+
+  setPlaceholderLeft : observer('shouldShowPlaceholderLeft', function () {
+    // The delay is necessary for HTML class to update with a delay.
+    // Otherwise, dragging is finished immediately.
+    next(() => {
+      if (this.get('isDestroying') || this.get('isDestroyed')) return
+      this.set(
+        'shouldShowPlaceholderLeft2',
+        this.get('shouldShowPlaceholderLeft')
+      )
+    })
+  }),
+
+  setPlaceholderRight : observer('shouldShowPlaceholderRight', function () {
+    // The delay is necessary for HTML class to update with a delay.
+    // Otherwise, dragging is finished immediately.
+    next(() => {
+      if (this.get('isDestroying') || this.get('isDestroyed')) return
+      this.set(
+        'shouldShowPlaceholderRight2',
+        this.get('shouldShowPlaceholderRight')
+      )
+    })
+  }),
+
 })

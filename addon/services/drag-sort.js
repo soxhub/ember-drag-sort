@@ -8,8 +8,9 @@ import {next} from '@ember/runloop'
 export default Service.extend(EventedMixin, {
 
   // ----- Static properties -----
-  isDragging   : false,
-  isDraggingUp : null,
+  isDragging     : false,
+  isDraggingUp   : null,
+  isDraggingLeft : null,
 
   draggedItem : null,
   group       : null,
@@ -26,8 +27,9 @@ export default Service.extend(EventedMixin, {
   // ----- Custom methods -----
   startDragging ({item, index, items, group}) {
     this.setProperties({
-      isDragging   : true,
-      isDraggingUp : false,
+      isDragging     : true,
+      isDraggingUp   : false,
+      isDraggingLeft : false,
 
       draggedItem : item,
       group,
@@ -42,6 +44,7 @@ export default Service.extend(EventedMixin, {
       if (index === 0) {
         this.set("targetIndex", index + 1)
         this.set("isDraggingUp", true)
+        this.set("isDraggingLeft", false)
 
       } else {
         this.set("targetIndex", index - 1)
@@ -60,7 +63,7 @@ export default Service.extend(EventedMixin, {
 
 
 
-  draggingOver ({group, index, items, isDraggingUp}) {
+  draggingOver ({group, index, items, isDraggingUp, isDraggingLeft}) {
     // Ignore hovers over irrelevant groups
     if (group !== this.get('group')) return
 
@@ -81,10 +84,12 @@ export default Service.extend(EventedMixin, {
       })
     }
 
+
     // Remember current index and direction
     this.setProperties({
       targetIndex : index,
-      isDraggingUp
+      isDraggingUp,
+      isDraggingLeft
     })
   },
 
@@ -129,6 +134,7 @@ export default Service.extend(EventedMixin, {
     const isDraggingUp = this.get('isDraggingUp')
     const group        = this.get('group')
     const draggedItem  = this.get('draggedItem')
+    const isDraggingLeft = this.get('isDraggingLeft')
 
     if (sourceList !== targetList || sourceIndex !== targetIndex) {
       // Account for dragged item shifting indexes by one
@@ -139,8 +145,8 @@ export default Service.extend(EventedMixin, {
 
       // Account for dragging down
       if (
-        // Dragging down
-        !isDraggingUp
+        // Dragging Right Or Down
+        (!isDraggingUp || !isDraggingLeft)
 
         // Target index is not after the last item
         && targetIndex < targetList.get('length')
@@ -190,8 +196,9 @@ export default Service.extend(EventedMixin, {
 
   _reset () {
     this.setProperties({
-      isDragging   : false,
-      isDraggingUp : null,
+      isDragging     : false,
+      isDraggingUp   : null,
+      isDraggingLeft : null,
 
       draggedItem : null,
       group       : null,

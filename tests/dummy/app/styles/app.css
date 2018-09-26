@@ -53,8 +53,18 @@ h6:last-child
   margin-right: 20px;
 }
 
+.list.horizontal {
+  width: 300px;
+}
+
 .list-group .dragSortList {
   background-color: #eee;
+}
+
+.dragSortList.horizontal{
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
 .dragSortItem {

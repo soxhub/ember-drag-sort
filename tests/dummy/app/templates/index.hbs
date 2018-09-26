@@ -64,8 +64,6 @@
     </section>
   </div>
 
-
-
   <div class="list-group-wrapper">
     <h2>Async action</h2>
 
@@ -315,3 +313,30 @@
     dragEndAction = (action 'dragEnd')
   }}
 </div>
+
+<div class="list-group-wrapper">
+    <h2>Horizontal Sort</h2>
+
+    <p>
+      Sort list items horizontally. Great for tabs.
+    </p>
+
+    <section class="list-group">
+      <article class="list horizontal">
+        {{#drag-sort-list
+          items         = items12
+          group = 12
+          dragEndAction = (action 'dragEnd')
+          childTagName = 'li'
+          class = 'horizontal'
+          tagName = 'ul'
+          horizontalSort = true
+          as |item|
+        }}
+          <div class="the-item">
+            {{item.name}}
+          </div>
+        {{/drag-sort-list}}
+      </article>
+    </section>
+  </div>
