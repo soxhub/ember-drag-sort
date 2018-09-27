@@ -200,7 +200,7 @@ export default Component.extend({
     const top          = this.$().offset().top
     const height       = this.$().outerHeight()
     const width        = this.$().outerWidth()
-    const left         = this.$().offset().left / width
+    const left         = this.$().offset().left
     const isDraggingUp = (pageY - top) < height / 2
     const isDraggingLeft = (pageX - left) < width / 2
 
